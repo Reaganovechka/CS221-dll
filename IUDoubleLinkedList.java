@@ -58,7 +58,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
     }
 
     @Override
-    public void add(int index, T element) {
+    public void add(int index, T element) { // TODO
         Node<T> newNode = new Node<T>(element);
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
@@ -94,24 +94,24 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
         // }
         // head = newNode;
         // }
-        if (head == tail) { // Single element list
-            if (index == 0) {
-                head.setPrevNode(newNode);
-                newNode.setNextNode(head);
-                head = newNode;
-            } else {
-                tail.setNextNode(newNode);
-                newNode.setPrevNode(tail);
-                tail = newNode;
-            }
-        } else if (priorNode == tail) { // End of the list
-            tail.setNextNode(newNode);
-            newNode.setPrevNode(tail);
-            tail = newNode;
-        }
+    //     if (head == tail) { // Single element list
+    //         if (index == 0) {
+    //             head.setPrevNode(newNode);
+    //             newNode.setNextNode(head);
+    //             head = newNode;
+    //         } else {
+    //             tail.setNextNode(newNode);
+    //             newNode.setPrevNode(tail);
+    //             tail = newNode;
+    //         }
+    //    // } else if (priorNode == tail) { // End of the list
+    //         tail.setNextNode(newNode);
+    //         newNode.setPrevNode(tail);
+    //         tail = newNode;
+    //     }
 
-        size++;
-        modCount++;
+    //     size++;
+    //     modCount++;
     }
 
     @Override
@@ -122,8 +122,20 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T removeLast() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeLast'");
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        T retVal = tail.getElement();
+        tail = tail.getPrevNode();
+        if (size == 1) { //or tail == null
+            head = null; // removed only element
+        } else {
+            tail.setNextNode(null);
+        }
+
+        size--;
+        modCount++;
+        return retVal;
     }
 
     @Override
