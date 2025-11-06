@@ -231,4 +231,88 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
         throw new UnsupportedOperationException("Unimplemented method 'listIterator'");
     }
 
+    /**
+     * List iterator for IUDoubleLinkedList
+     */
+    private class DLLIterator implements ListIterator<T> {
+        private Node<T> nextNode;
+        private int nextIndex;
+        private Node<T> lastReturnedNode;
+        private int iterModCount;
+
+        /**
+         * Initialize iterator before first element.
+         */
+        public DLLIterator(){
+            nextNode = head;
+            nextIndex = 0;
+            iterModCount = modCount;
+            lastReturnedNode = null;
+        }
+
+        /**
+         * Initialize iterator before the specified index.
+         * @param startingIndex index that would be next after constructor
+         */
+        public DLLIterator(int startingIndex) {
+            //TODO - shoul def be optimized to start from the closest end
+        }
+
+
+        @Override
+        public boolean hasNext() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'hasNext'");
+        }
+
+        @Override
+        public T next() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'next'");
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'hasPrevious'");
+        }
+
+        @Override
+        public T previous() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'previous'");
+        }
+
+        @Override
+        public int nextIndex() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'nextIndex'");
+        }
+
+        @Override
+        public int previousIndex() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'previousIndex'");
+        }
+
+        @Override
+        public void remove() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'remove'");
+        }
+
+        @Override
+        public void set(T e) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'set'");
+        }
+
+        @Override
+        public void add(T e) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'add'");
+        }
+
+    }
+
 }
