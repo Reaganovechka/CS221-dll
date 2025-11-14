@@ -37,25 +37,37 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
         head = newNode;
         size++;
         modCount++;
-
+        // ListIterator<T> lit = listIterator();
+        // lit.add(element);
     }
 
     @Override
     public void addToRear(T element) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'addToRear'");
+        // ListIterator<T> lit = listIterator(size);
+        // lit.add(element);
     }
 
     @Override
     public void add(T element) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'add'");
+        addToRear(element);
     }
 
     @Override
     public void addAfter(T element, T target) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addAfter'");
+        ListIterator<T> lit = listIterator();
+        boolean foundIt = false;
+        while (lit.hasNext() && lit.next().equals(target)) {
+            if (lit.next().equals(target)) {
+                lit.add(element);
+                foundIt = true;
+            } // else, nothing
+
+        }
+        if (!foundIt) {
+            throw new NoSuchElementException();
+        }
     }
 
     @Override
@@ -85,6 +97,9 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             // afterNode.setPrevNode(newNode);
             // newNode.setNextNode(afterNode);
 
+
+            //ListIterator<T> lit = listIterator(index);
+            //lit.add(element);
         }
         // if (index == 0) { // Beginning of the list, long OR empty
         // newNode.setNextNode(head);
@@ -137,6 +152,11 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
         size--;
         modCount++;
         return retVal;
+        //ListIterator<T> lit = listIterator(size);
+        //if(!lit.hasPrevious()){
+        //  throw new NoSuchElementException();
+        //}
+
     }
 
     @Override
@@ -159,26 +179,40 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T get(int index) { // Single-linked impl. can be improved from n/2 to n/4 avg
-        if (index < 0 || index >= size) {
+        // if (index < 0 || index >= size) {
+        //     throw new IndexOutOfBoundsException();
+        // }
+        // Node<T> currentNode = head;
+        // for (int i = 0; i < index; i++) {
+        //     currentNode = currentNode.getNextNode();
+        // }
+        // return currentNode.getElement();
+        if (index == size){
             throw new IndexOutOfBoundsException();
         }
-        Node<T> currentNode = head;
-        for (int i = 0; i < index; i++) {
-            currentNode = currentNode.getNextNode();
-        }
-        return currentNode.getElement();
+        ListIterator<T> lit = listIterator(index);
+        return lit.next();
     }
 
     @Override
     public int indexOf(T element) {
-        int index = 0;
-        Node<T> currentNode = head; // Start at the beginning, head is the first node we ill look at
-        while (currentNode != null && !element.equals(currentNode.getElement())) { // either I found it or i didnt
-            currentNode = currentNode.getNextNode();
-            index++;
-        }
-        if (currentNode == null) { // Did not find it, OR index >= size()
-            index = -1;
+        // int index = 0;
+        // Node<T> currentNode = head; // Start at the beginning, head is the first node we ill look at
+        // while (currentNode != null && !element.equals(currentNode.getElement())) { // either I found it or i didnt
+        //     currentNode = currentNode.getNextNode();
+        //     index++;
+        // }
+        // if (currentNode == null) { // Did not find it, OR index >= size()
+        //     index = -1;
+        // }
+        int index = -1;
+        int currentIndex = 0;
+        ListIterator<T> lit = listIterator();
+        while(index < 0 && lit.hasNext()){
+            if (lit.next().equals(element)) {
+                index = currentIndex;
+            }
+            currentIndex ++;
         }
         return index;
     }
