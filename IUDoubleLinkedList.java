@@ -221,12 +221,16 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
                 throw new NoSuchElementException();
             }
             retVal = currentNode.getNextNode().getElement();
-            if (currentNode == tail) {
+            if (currentNode.getNextNode() == tail) {
+                tail.setNextNode(null);
                 tail = currentNode;
-            }
+                
+            } else {
             // 'general case'- middle of long list
-            currentNode.setNextNode(currentNode.getNextNode().getNextNode());
-            currentNode.getNextNode().setPrevNode(currentNode);
+            Node<T> continueNode = currentNode.getNextNode().getNextNode();
+            currentNode.setNextNode(continueNode);
+            continueNode.setPrevNode(currentNode);
+            }
             // Was it the only element?
             if (head == tail) {
                 currentNode = null;
