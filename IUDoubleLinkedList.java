@@ -62,22 +62,34 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public void addAfter(T element, T target) {
-        ListIterator<T> lit = listIterator();
-        boolean foundIt = false;
-        while (lit.hasNext() && lit.next().equals(target)) {
-            if (lit.next().equals(target)) {
-                lit.add(element);
-                foundIt = true;
-            } // else, nothing
-
-        }
-        if (!foundIt) {
+        Node<T> newNode = new Node<T>(element);
+        if (isEmpty() || !contains(target)) { // If the list is empty, or it does not contain the target element
             throw new NoSuchElementException();
         }
+        int index = indexOf(target);
+        Node<T> currentNode = head;
+        for (int i = 0; i < index; i++) {
+            currentNode = currentNode.getNextNode();
+        }
+        if (currentNode == tail) {
+            currentNode.setNextNode(newNode);
+            newNode.setPrevNode(tail);
+            tail = newNode;
+        } else {
+            Node<T> continueNode = currentNode.getNextNode();
+            currentNode.setNextNode(newNode);
+            newNode.setPrevNode(currentNode);
+            continueNode.setPrevNode(newNode);
+            newNode.setNextNode(continueNode);
+        }
+
+        size++;
+        modCount++;
+
     }
 
     @Override
-    public void add(int index, T element) { // TODO
+    public void add(int index, T element) { 
         Node<T> newNode = new Node<T>(element);
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
@@ -141,15 +153,21 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T removeFirst() {
-        if (isEmpty()){
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
         Node<T> firstNode = head;
+        if (head == tail) { //Only element in the list
+            firstNode = null;
+        } else {
+
+        
         head = head.getNextNode();
         head.setPrevNode(null);
-        if (head == null){
+        if (head == null) {
             tail = null;
         }
+    }
         size--;
         modCount++;
         return firstNode.getElement();
@@ -180,17 +198,17 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T remove(T element) {
-        if (isEmpty()){
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
-         // must check the head node before general case search
+        // must check the head node before general case search
         T retVal;
         // Beginning of a list
         if (head.getElement().equals(element)) {
             retVal = head.getElement();
             head = head.getNextNode();
             head.setPrevNode(null);
-            if (head == null) { //removed first and only element
+            if (head == null) { // removed first and only element
                 tail = null;
             }
         } else {
@@ -232,27 +250,27 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             throw new IndexOutOfBoundsException();
         }
         Node<T> currentNode = head;
-        for (int i = 0; i < index - 1; i++){
-
+        for (int i = 0; i < index - 1; i++) {
+            currentNode = currentNode.getNextNode();
         }
         T retVal = null;
-        // If removed only element 
+        // If removed only element
         if (currentNode == head && head == tail) { // if removed first and only element
             retVal = currentNode.getElement();
             currentNode = null;
-        } else if ( currentNode == head && index == 0) { // if removed first element in long list
+        } else if (currentNode == head && index == 0) { // if removed first element in long list
             retVal = head.getElement();
             head = currentNode.getNextNode();
             head.setPrevNode(null);
-        } else if (currentNode.getNextNode() == tail) { //Removing the last element
+        } else if (currentNode.getNextNode() == tail) { // Removing the last element
             retVal = tail.getElement();
-            currentNode.setNextNode(null);  
-            tail = currentNode;  
+            currentNode.setNextNode(null);
+            tail = currentNode;
         } else {
             retVal = currentNode.getNextNode().getElement();
             Node<T> continueNode = currentNode.getNextNode().getNextNode();
             currentNode.setNextNode(continueNode);
-            continueNode.setNextNode(currentNode);
+            continueNode.setPrevNode(currentNode);
         }
 
         size--;
@@ -265,17 +283,17 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         }
-        if (index > size/2) { //Back half
+        if (index > size / 2) { // Back half
             Node<T> currentNode = tail;
-            for (int i = size-1; i > index; i--){
+            for (int i = size - 1; i > index; i--) {
                 currentNode = currentNode.getPrevNode();
             }
             currentNode.setElement(element);
         } else { // Front half
             Node<T> currentNode = head;
-            for (int i = 0; i < index; i++){
+            for (int i = 0; i < index; i++) {
                 currentNode = currentNode.getNextNode();
-            }    
+            }
             currentNode.setElement(element);
         }
         modCount++;
@@ -300,25 +318,14 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public int indexOf(T element) {
-        // int index = 0;
-        // Node<T> currentNode = head; // Start at the beginning, head is the first node
-        // we ill look at
-        // while (currentNode != null && !element.equals(currentNode.getElement())) { //
-        // either I found it or i didnt
-        // currentNode = currentNode.getNextNode();
-        // index++;
-        // }
-        // if (currentNode == null) { // Did not find it, OR index >= size()
-        // index = -1;
-        // }
-        int index = -1;
-        int currentIndex = 0;
-        ListIterator<T> lit = listIterator();
-        while (index < 0 && lit.hasNext()) {
-            if (lit.next().equals(element)) {
-                index = currentIndex;
-            }
-            currentIndex++;
+        int index = 0;
+        Node<T> currentNode = head; // Start at the beginning, head is the first node we will look at
+        while (currentNode != null && !element.equals(currentNode.getElement())) { // either I found it or i didnt
+            currentNode = currentNode.getNextNode();
+            index++;
+        }
+        if (currentNode == null) { // Did not find it, OR index >= size()
+            index = -1;
         }
         return index;
     }
@@ -355,6 +362,21 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
     }
 
     @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("[");
+        for (T element : this) {
+            str.append(element.toString());
+            str.append(", ");
+        }
+        if (!isEmpty()) {
+            str.delete(str.length() - 2, str.length());
+        }
+        str.append("]");
+        return str.toString();
+    }
+
+    @Override
     public Iterator<T> iterator() {
         return new DLLIterator();
     }
@@ -375,9 +397,11 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
     private class DLLIterator implements ListIterator<T> {
         private Node<T> nextNode;
         private int nextIndex;
+        private int prevIndex;
         private Node<T> lastReturnedNode;
         private int iterModCount;
         private boolean canRemove;
+        private boolean canSet;
 
         /**
          * Initialize iterator before first element.
@@ -396,7 +420,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
          * @param startingIndex index that would be next after constructor
          */
         public DLLIterator(int startingIndex) {
-            if (startingIndex < 0 || startingIndex >= size) {
+            if (startingIndex < 0 || startingIndex > size) {
                 throw new IndexOutOfBoundsException();
             }
             if (startingIndex > size / 2) {
@@ -417,6 +441,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
                 }
             }
             nextIndex = startingIndex;
+            prevIndex = 0; //TODO change
             iterModCount = modCount;
             lastReturnedNode = null;
             canRemove = false;
@@ -438,6 +463,8 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             }
             nextNode = nextNode.getNextNode();
             canRemove = true;
+            canSet = true;
+            nextIndex++;
             return nextNode.getPrevNode().getElement();
         }
 
@@ -459,19 +486,21 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             lastReturnedNode = nextNode;
             nextIndex--;
             canRemove = true;
+            canSet = true;
             return nextNode.getElement();
         }
 
         @Override
         public int nextIndex() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'nextIndex'");
+            if (!hasNext()) {
+                return size;
+            }
+            return nextIndex;
         }
 
         @Override
         public int previousIndex() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'previousIndex'");
+            return prevIndex;
         }
 
         @Override
@@ -486,6 +515,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
                 throw new IllegalStateException();
             }
             canRemove = false;
+            canSet = false;
             // Now I can remove lastReturnedNode
             if (lastReturnedNode == tail) {
                 tail = lastReturnedNode.getPrevNode();
@@ -511,13 +541,52 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             if (iterModCount != modCount) {
                 throw new ConcurrentModificationException();
             }
+            if (!canSet) {
+                throw new IllegalStateException();
+            }
+            canSet = false;
+            // Now we can set
+            lastReturnedNode.setElement(e);
+            iterModCount++;
         }
 
         @Override
         public void add(T e) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'add'");
+            if (iterModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+            // Insert new node immediately before nextNode (the element that would be
+            // returned
+            // by a subsequent call to next()). If nextNode is null, insert at end.
+            Node<T> newNode = new Node<T>(e);
+
+            if (head == null) { // empty list
+                head = newNode;
+                tail = newNode;
+            } else if (nextNode == head) { // insert before head
+                newNode.setNextNode(head);
+                head.setPrevNode(newNode);
+                head = newNode;
+            } else if (nextNode == null) { // insert at end (after tail)
+                tail.setNextNode(newNode);
+                newNode.setPrevNode(tail);
+                tail = newNode;
+            } else { // insert between prev and nextNode
+                Node<T> prev = nextNode.getPrevNode();
+                prev.setNextNode(newNode);
+                newNode.setPrevNode(prev);
+                newNode.setNextNode(nextNode);
+                nextNode.setPrevNode(newNode);
+            }
+
+            size++;
+            modCount++;
+            iterModCount = modCount;
+
+            nextIndex++;
+            lastReturnedNode = null;
             canRemove = false;
+            canSet = false;
         }
 
     }
