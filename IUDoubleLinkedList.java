@@ -157,6 +157,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             throw new NoSuchElementException();
         }
         Node<T> firstNode = head;
+        T retVal = firstNode.getElement();
         if (head == tail) { //Only element in the list
             firstNode = null;
         } else {
@@ -170,7 +171,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
     }
         size--;
         modCount++;
-        return firstNode.getElement();
+        return retVal;
     }
 
     @Override
@@ -201,43 +202,40 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        // must check the head node before general case search
         T retVal;
-        // Beginning of a list
-        if (head.getElement().equals(element)) {
+        if(head.getElement().equals(element)) {
             retVal = head.getElement();
             head = head.getNextNode();
-            head.setPrevNode(null);
-            if (head == null) { // removed first and only element
+            if (head == null) {
                 tail = null;
             }
-        } else {
+        } else { //Not the first element in list
             Node<T> currentNode = head;
             while (currentNode != tail && !currentNode.getNextNode().getElement().equals(element)) {
                 currentNode = currentNode.getNextNode();
             }
-            // if it is never found
-            if (currentNode == tail) {
-                throw new NoSuchElementException();
+            if (currentNode == tail) { //Element was never found
+                throw new NoSuchElementException();    
             }
-            retVal = currentNode.getNextNode().getElement();
-            if (currentNode.getNextNode() == tail) {
-                tail.setNextNode(null);
+            // General case
+            if (currentNode == head && head == tail) { //First and ONLY element
+                retVal = currentNode.getElement();
+                head = null;
+                tail = null;
+            }
+            else if (currentNode == head) { //First Node 
+                retVal = currentNode.getElement();
+                head = currentNode.getNextNode();
+                head.setPrevNode(null);
+            } else if (currentNode.getNextNode() == tail) { //Last Node
+                retVal = currentNode.getNextNode().getElement();
                 tail = currentNode;
-                
-            } else {
-            // 'general case'- middle of long list
-            Node<T> continueNode = currentNode.getNextNode().getNextNode();
-            currentNode.setNextNode(continueNode);
-            continueNode.setPrevNode(currentNode);
-            }
-            // Was it the only element?
-            if (head == tail) {
-                currentNode = null;
-            }
-            // Was it the last node?
-            if (currentNode.getNextNode() == null) {
-                tail = currentNode;
+                currentNode.setNextNode(null);
+            } else { // general case
+                retVal = currentNode.getNextNode().getElement();
+                Node<T> continueNode = currentNode.getNextNode().getNextNode();
+                currentNode.setNextNode(continueNode);
+                continueNode.setPrevNode(currentNode);
             }
 
         }
@@ -305,19 +303,14 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
     @Override
     public T get(int index) { // Single-linked impl. can be improved from n/2 to n/4 avg
-        // if (index < 0 || index >= size) {
-        // throw new IndexOutOfBoundsException();
-        // }
-        // Node<T> currentNode = head;
-        // for (int i = 0; i < index; i++) {
-        // currentNode = currentNode.getNextNode();
-        // }
-        // return currentNode.getElement();
-        if (index == size) {
-            throw new IndexOutOfBoundsException();
+        if (index < 0 || index >= size) {
+        throw new IndexOutOfBoundsException();
         }
-        ListIterator<T> lit = listIterator(index);
-        return lit.next();
+        Node<T> currentNode = head;
+        for (int i = 0; i < index; i++) {
+        currentNode = currentNode.getNextNode();
+        }
+        return currentNode.getElement();
     }
 
     @Override
