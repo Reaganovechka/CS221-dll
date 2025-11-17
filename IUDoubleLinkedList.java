@@ -377,6 +377,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
         private int nextIndex;
         private Node<T> lastReturnedNode;
         private int iterModCount;
+        private boolean canRemove;
 
         /**
          * Initialize iterator before first element.
@@ -418,6 +419,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             nextIndex = startingIndex;
             iterModCount = modCount;
             lastReturnedNode = null;
+            canRemove = false;
 
         }
 
@@ -435,6 +437,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
                 throw new NoSuchElementException();
             }
             nextNode = nextNode.getNextNode();
+            canRemove = true;
             return nextNode.getPrevNode().getElement();
         }
 
@@ -455,6 +458,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             nextNode = nextNode.getPrevNode();
             lastReturnedNode = nextNode;
             nextIndex--;
+            canRemove = true;
             return nextNode.getElement();
         }
 
@@ -478,7 +482,10 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             if (lastReturnedNode == null) {
                 throw new IllegalStateException();
             }
-
+            if (!canRemove) {
+                throw new IllegalStateException();
+            }
+            canRemove = false;
             // Now I can remove lastReturnedNode
             if (lastReturnedNode == tail) {
                 tail = lastReturnedNode.getPrevNode();
@@ -501,14 +508,16 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
 
         @Override
         public void set(T e) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'set'");
+            if (iterModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
         }
 
         @Override
         public void add(T e) {
             // TODO Auto-generated method stub
             throw new UnsupportedOperationException("Unimplemented method 'add'");
+            canRemove = false;
         }
 
     }
