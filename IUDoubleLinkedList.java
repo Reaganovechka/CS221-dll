@@ -104,7 +104,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
                 head = newNode;
             } else {
                 tail.setNextNode(newNode);
-                newNode.setPrevNode(newNode);
+                newNode.setPrevNode(tail);
                 tail = newNode;
             }
         } else { // List longer than 1 element
