@@ -489,7 +489,7 @@ public class IUDoubleLinkedList<T> implements IndexedUnsortedList<T> {
             if (iterModCount != modCount) {
                 throw new ConcurrentModificationException();
             }
-            if (!canSet) {
+            if (lastReturnedNode == null) { // Fixed for future tests
                 throw new IllegalStateException();
             }
             canSet = false;
